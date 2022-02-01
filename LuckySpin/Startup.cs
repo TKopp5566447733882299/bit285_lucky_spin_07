@@ -2,18 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LuckySpin.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LuckySpin
 {
     public class Startup
     {
-     // TODO: Inject configuration into Startup via it's constructor (see slides)
-     //  this will be used to read the database connection string from appsetting.json
-       
+        private readonly IConfiguration _config;
+
+        // TODO: Inject configuration into Startup via it's constructor (see slides)
+        //  this will be used to read the database connection string from appsetting.json
+        public Startup(IConfiguration config)
+        {
+            _config = config;
+        }
 
     // This method gets called by the runtime. Use this method to add services to the container.
     // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -21,9 +29,7 @@ namespace LuckySpin
         {
             services.AddMvc();
             services.AddTransient<Models.TextTransformService>();
-            //TODO: Remove the Singleton Repository
-            services.AddSingleton<Models.Repository>();
-            //TODO: Register the DataBase Context
+            services.AddDbContext<LuckySpinContext>(options =>options.UseSqlServer(_config.GetConnectionString("LuckySpinDb")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,0 +1,16 @@
+﻿Why use the repository player information to initialize the SpinViewModel?(HINT: See what happens if you comment out the code to initialize it.)
+
+	If the data is not entered with the repository then the data is instantiated with thir default values so therefore the luck and balance are 0 
+	And the name is set to nothing.
+
+What else does the SpinViewModel's method ChargeSpin() do besides charge for spin? Where is this method used?
+
+	It is used to check if the player has enough to play in the spinnerController
+
+Where is the logic to determine a winning spin? Where is this method used?
+
+	The property is found in the spin veiw model and is called to check if luck is contained in the numbers array.
+
+Why is it necessary to update the dbContext player's balance from the spinViewModel after a spin?
+
+	It is nessasary because after the spinVeiwmodel will charge the players balance and update the DB and is taken later on 

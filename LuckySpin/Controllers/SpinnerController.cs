@@ -20,9 +20,9 @@ namespace LuckySpin.Controllers
         /***
          * Controller Constructor
          */
-        public SpinnerController(Repository repository) //TODO: use LuckySpinContext instead
+        public SpinnerController(LuckySpinContext lsc) //TODO: use LuckySpinContext instead
         {
-            _repository = repository; //TODO: use _lsc instead
+            _lsc = lsc;
         }
 
         /***
@@ -46,28 +46,30 @@ namespace LuckySpin.Controllers
                 Luck = info.Luck,
                 Balance = info.StartingBalance
             };
-            //TODO: Use _lsc to add the player to dbContext _lsc and save changes to the database, instead of the repository
-            _repository.CurrentPlayer = player;
+            //_repository.CurrentPlayer = player;
+            _lsc.Players.Add(player);
+            _lsc.SaveChanges();
 
             
-            return RedirectToAction("Spin"); //TODO: Pass the player Id to Spin, using RedirectToAction("Spin", new {id = player.PlayerId})
+            return RedirectToAction("Spin", new { id = player.PlayerId}); //TODO: Pass the player Id to Spin, using RedirectToAction("Spin", new {id = player.PlayerId})
         }
 
         /***
          * Spin Action - Plays one Spin
          **/  
          [HttpGet]      
-         public IActionResult Spin() //TODO: receive an id of type long
+         public IActionResult Spin(long id) //TODO: receive an id of type long
         {
-            //TODO: Get a player object from the database using the _lsc Players' Find method
-            
+        //TODO: Get a player object from the database using the _lsc Players' Find method
 
-            //TODO: Intialize the ViewModel with the player object you just got from the database, instead of the repository object
-            SpinViewModel spinVM = new SpinViewModel() {
-                PlayerName = _repository.CurrentPlayer.FirstName,
-                Luck = _repository.CurrentPlayer.Luck,
-                CurrentBalance = _repository.CurrentPlayer.Balance
-            };
+
+        //: Intialize the ViewModel with the player object you just got from the database, instead of the repository object
+        SpinViewModel spinVM = new SpinViewModel()
+        {
+            PlayerName = _lsc.Players.Find(id).FirstName,
+            Luck = _lsc.Players.Find(id).Luck,
+            CurrentBalance = _lsc.Players.Find(id).Balance
+        };
 
             if (!spinVM.ChargeSpin())
             {
@@ -75,9 +77,10 @@ namespace LuckySpin.Controllers
             }
  
             if (spinVM.Winner) { spinVM.CollectWinnings(); }
-            
+
             // TODO: Update the dbContext player's Balance using value from the ViewModel
-            _repository.CurrentPlayer.Balance = spinVM.CurrentBalance;
+            _lsc.Players.Find(id).Balance = spinVM.CurrentBalance;
+            
 
             //Creates a Spin using the logic from the SpinViewModel
             Spin spin = new Spin() {
@@ -85,7 +88,8 @@ namespace LuckySpin.Controllers
             };
 
             //TODO: Use _lsc to add the spin to dbContext _lsc and save changes to the database, instead of the repository
-            _repository.AddSpin(spin);
+            _lsc.Spins.Add(spin);
+            _lsc.SaveChanges();
 
             return View("Spin", spinVM); //Sends the updated spin info to the Spin View
         }
