@@ -1,0 +1,28 @@
+﻿@model IEnumerable<LuckySpin.Models.Spin>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_Layout";
+    int num = 0; //Use this to number each spin in the display
+}
+<h1>Out of Luck</h1>
+<table>
+    <thead><tr><th>Spin #</th><th>Result</th></tr></thead>
+    <tbody>
+        @foreach (LuckySpin.Models.Spin spin in @Model)
+        {
+            var result = (spin.IsWinning) ? "Win" : "Lose";
+            num++; //increment the row number
+            <tr @if (spin.IsWinning)
+                {<text> style='background-color:lightgreen;' </text> }
+                >
+                <td>@num</td>
+                <td>@result</td>
+            </tr>
+
+        }
+    </tbody>
+
+
+</table>
+<!-- A link to Play Again -->
+@Html.ActionLink("Play Again", "Index")
